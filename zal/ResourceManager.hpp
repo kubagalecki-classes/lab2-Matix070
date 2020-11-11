@@ -1,21 +1,60 @@
-#pragma once
+#include "include/Resource.hpp"
+#include <iostream>
 
-#include "Resource.hpp"
+using namespace std;
 
 class ResourceManager
 {
     // Twoja implementacja tutaj
-    private:
-    Resource* resource;
+private:
+    Resource* wsk;
 
-    public:
-    ResourceManager(){
-    this->resource=new Resource{};
+public:
+    // konstruktor i destruktor
+    ResourceManager() { wsk = new Resource; }
+
+    ~ResourceManager() { delete wsk; }
+
+   ResourceManager(const ResourceManager& rs) // copying constructor
+    {
+        cout << "copying_constr" << endl;
+        wsk = new Resource{*rs.wsk};
+        cout << wsk << endl;
     }
-    ~ResourceManager(){
-    delete resource;
+
+    ResourceManager& operator=(const ResourceManager& rs)
+    {
+        if (!(wsk == nullptr)) {
+            cout << "selfDeleting" << endl;
+            delete wsk;
+        }
+        cout << "copying_operator" << endl;
+        wsk = new Resource{*rs.wsk};
+        cout << wsk << endl;
+        return *this;
     }
-    double get(){
-    return resource->get();
+
+    // konstrktor przesuniecia
+    ResourceManager(ResourceManager&& prze)
+    {
+        wsk      = prze.wsk;
+        prze.wsk = nullptr;
+    }    
+
+    // operator std::move
+    ResourceManager& operator=(ResourceManager&& prze)
+    {
+        if (&prze == this) {
+            return *this;
+        }
+        delete wsk;
+        wsk      = prze.wsk;
+        prze.wsk = nullptr;
+        return *this;
+    }
+
+    double get()
+    {
+        return wsk->get();
     }
 };
